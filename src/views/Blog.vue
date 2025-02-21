@@ -18,12 +18,26 @@ export default {
     };
   },
   methods: {
-    addPost(newPost) {
-      this.posts.push(newPost);
+    async fetchPosts() {
+      const response = await fetch('http://localhost:5000/posts');
+      this.posts = await response.json();
     },
-    deletePost(id) {
+    async addPost(newPost) {
+      const response = await fetch('http://localhost:5000/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPost)
+      });
+      const createdPost = await response.json();
+      this.posts.push(createdPost);
+    },
+    async deletePost(id) {
+      await fetch(`http://localhost:5000/posts/${id}`, { method: 'DELETE' });
       this.posts = this.posts.filter(post => post.id !== id);
     }
+  },
+  mounted() {
+    this.fetchPosts();
   }
 };
 </script>
